@@ -19,17 +19,18 @@ class TestClient(uri: URI) : WebSocketClient(uri) {
 
     override fun onOpen(handshakedata: ServerHandshake?) {
         Log.d("WebSocketClient", "### onOpen")
-        callback?.onMessageReceived("connection opened")
+        callback?.onMessageReceived("[client]connection opened")
     }
 
     override fun onMessage(message: String?) {
+        // サーバーからのメッセージを受信
         Log.d("WebSocketClient", "### onMessage: $message")
-        callback?.onMessageReceived(message ?: "null")
+        callback?.onMessageReceived("[server]${message}")
     }
 
     override fun onClose(code: Int, reason: String?, remote: Boolean) {
         Log.d("WebSocketClient", "### onClose")
-        callback?.onMessageReceived("connection closed")
+        callback?.onMessageReceived("[client]connection closed")
     }
 
     override fun onError(ex: Exception?) {

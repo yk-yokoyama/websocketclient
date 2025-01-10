@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
                 client = TestClient(uri)
                 client?.setWebSocketCallback(object : TestClient.WebsocketCallback {
                     override fun onMessageReceived(message: String) {
-                        printLog("[server]$message")
+                        printLog(message)
                     }
                 })
 
@@ -73,11 +73,22 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter a message.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            client?.send(message)
+            
+            try {
+                client?.send(message)
+            } catch (e: Exception) {
+                printLog(e.message ?: "null")
+            }
         }
     }
 
-    private fun printLog(message: String) {
+    override fun onDestroy() {
+        super.onDestroy()
+        client?.close()
+        client?.setWebSocketCallback(null)
+    }
+
+    fun printLog(message: String) {
         Log.d("MainActivity", message)
         CoroutineScope(Dispatchers.Main).launch {
             logTextView.append(message)
