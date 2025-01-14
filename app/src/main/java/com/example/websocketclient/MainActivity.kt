@@ -14,7 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URI
-import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,23 +47,33 @@ class MainActivity : AppCompatActivity() {
 
             val uri = URI("ws://$ip:${port.toInt()}")
 
-            CoroutineScope(Dispatchers.Main).launch {
-                client = TestClient(uri)
-                client?.setWebSocketCallback(object : TestClient.WebsocketCallback {
-                    override fun onMessageReceived(message: String) {
-                        printLog(message)
-                    }
-                })
+            if (client?.isOpen == true) {
+                Toast.makeText(this, "Already connected.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            
+            client = TestClient(uri)
+            client?.setWebSocketCallback(object : TestClient.WebsocketCallback {
+                override fun onMessageReceived(message: String) {
+                    printLog(message)
+                }
+            })
 
-                thread {
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
                     client?.connect()
+                    Log.d("MainActivity", "### connect")
+                } catch (e: Exception) {
+                    Log.d("MainActivity", "### connect error: ${e.message}")
                 }
             }
         }
 
         disconnectButton.setOnClickListener {
+            Log.d("MainActivity", "### close")
             client?.close()
             client?.setWebSocketCallback(null)
+            printLog("[client]connection closed")
         }
 
         sendButton.setOnClickListener {
@@ -73,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter a message.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            
+
             try {
                 client?.send(message)
             } catch (e: Exception) {
