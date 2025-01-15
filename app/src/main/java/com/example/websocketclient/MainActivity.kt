@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Already connected.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            
+
             client = TestClient(uri)
             client?.setWebSocketCallback(object : TestClient.WebsocketCallback {
                 override fun onMessageReceived(message: String) {
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
-            CoroutineScope(Dispatchers.Main).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
                     client?.connect()
                     Log.d("MainActivity", "### connect")
