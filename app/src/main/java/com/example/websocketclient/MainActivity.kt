@@ -2,8 +2,10 @@ package com.example.websocketclient
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -23,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private val disconnectButton by lazy { findViewById<Button>(R.id.btn_disconnect) }
     private val message by lazy { findViewById<EditText>(R.id.edit_message) }
     private val sendButton by lazy { findViewById<Button>(R.id.btn_send) }
+    private val scrollView by lazy { findViewById<ScrollView>(R.id.scrollView) }
     private val logTextView by lazy { findViewById<TextView>(R.id.logTextView) }
 
     private var client: TestClient? = null
@@ -102,6 +105,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             logTextView.append(message)
             logTextView.append("\n")
+            scrollView.fullScroll(View.FOCUS_DOWN)
         }
     }
 }
